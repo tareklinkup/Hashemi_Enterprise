@@ -1,0 +1,1 @@
+[28-Jan-2023 23:58:09 Asia/Dhaka] PHP Fatal error:  Allowed memory size of 536870912 bytes exhausted (tried to allocate 48238592 bytes) in /home4/hashemient/public_html/application/controllers/Administrator/Sales.php on line 1533
