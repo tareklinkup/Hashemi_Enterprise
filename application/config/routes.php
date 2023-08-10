@@ -89,6 +89,7 @@ $route['stockAvailable'] = 'Administrator/Products/stockAvailable';
 $route['stockAvailablePrint'] = 'Administrator/Reports/stockAvailable';
 $route['productName']    =    'Administrator/Products/product_name';
 $route['get_products']    =    'Administrator/Products/getProducts';
+$route['get_products_by_supplier'] = 'Administrator/Products/getProductsBySupplier';
 $route['get_product_stock']    =    'Administrator/Products/getProductStock';
 $route['get_current_stock']    =    'Administrator/Products/getCurrentStock';
 $route['get_total_stock']    =    'Administrator/Products/getTotalStock';
@@ -135,6 +136,13 @@ $route['get_purchasedetails_for_return'] = 'Administrator/Purchase/getPurchaseDe
 $route['add_purchase_return'] = 'Administrator/Purchase/addPurchaseReturn';
 $route['get_purchase_return_details'] = 'Administrator/Purchase/getPurchaseReturnDetails';
 $route['purchase'] = 'Administrator/Purchase/order';
+
+//---------------Supplier Check Entry routes 
+$route['supplier_cheque'] = 'Administrator/Supplier/supplierCheque';
+$route['add_supplier_cheque'] = 'Administrator/Supplier/addSupplierCheque';
+$route['get_suppliers_cheque'] = 'Administrator/Supplier/getSuppliersCheque';
+$route['update_supplier_cheque'] = 'Administrator/Supplier/updateSupplierCheque'; 
+
 $route['purchase/(:any)'] = 'Administrator/Purchase/purchaseEdit/$1';
 $route['purchaseExcel'] = 'Administrator/Purchase/purchaseExcel';
 $route['excelFileFormate'] = 'Administrator/Purchase/excelFileFormate';

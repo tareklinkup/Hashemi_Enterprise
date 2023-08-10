@@ -87,74 +87,55 @@
     <form @submit.prevent="saveSupplier">
         <div class="row" style="margin-top: 10px;margin-bottom:15px;border-bottom: 1px solid #ccc;padding-bottom:15px;">
             <div class="col-md-5">
-                <div class="form-group clearfix">
-                    <label class="control-label col-md-4">Supplier Id:</label>
-                    <div class="col-md-7">
-                        <input type="text" class="form-control" v-model="supplier.Supplier_Code" required readonly>
-                    </div>
-                </div>
 
                 <div class="form-group clearfix">
                     <label class="control-label col-md-4">Supplier Name:</label>
                     <div class="col-md-7">
-                        <input type="text" class="form-control" v-model="supplier.Supplier_Name" required>
+                        <v-select v-bind:options="suppliers" v-model="selectedSupplier" label="display_name">
+                        </v-select>
                     </div>
                 </div>
 
                 <div class="form-group clearfix">
-                    <label class="control-label col-md-4">Owner Name:</label>
+                    <label class="control-label col-md-4">Cheque No</label>
                     <div class="col-md-7">
-                        <input type="text" class="form-control" v-model="supplier.contact_person">
+                        <input type="text" class="form-control" v-model="supplier.cheque_no">
                     </div>
                 </div>
 
                 <div class="form-group clearfix">
                     <label class="control-label col-md-4">Address:</label>
                     <div class="col-md-7">
-                        <input type="text" class="form-control" v-model="supplier.Supplier_Address">
+                        <input type="text" class="form-control" v-model="supplier.address">
                     </div>
                 </div>
             </div>
 
             <div class="col-md-5">
                 <div class="form-group clearfix">
-                    <label class="control-label col-md-4">Mobile:</label>
+                    <label class="control-label col-md-4">Bank Name:</label>
                     <div class="col-md-7">
-                        <input type="text" class="form-control" v-model="supplier.Supplier_Mobile" required>
+                        <input type="text" class="form-control" v-model="supplier.bank_name" required>
                     </div>
                 </div>
 
                 <div class="form-group clearfix">
-                    <label class="control-label col-md-4">Email:</label>
+                    <label class="control-label col-md-4">Amount:</label>
                     <div class="col-md-7">
-                        <input type="text" class="form-control" v-model="supplier.Supplier_Email">
+                        <input type="text" class="form-control" v-model="supplier.amount">
                     </div>
                 </div>
 
                 <div class="form-group clearfix">
-                    <label class="control-label col-md-4">Previous Due:</label>
+                    <label class="control-label col-md-4">Description</label>
                     <div class="col-md-7">
-                        <input type="number" class="form-control" v-model="supplier.previous_due" required>
+                        <input type="text" class="form-control" v-model="supplier.description" required>
                     </div>
                 </div>
 
                 <div class="form-group clearfix">
                     <div class="col-md-7 col-md-offset-4">
                         <input type="submit" class="btn btn-success btn-sm" value="Save">
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2 text-center;">
-                <div class="form-group clearfix">
-                    <div style="width: 100px;height:100px;border: 1px solid #ccc;overflow:hidden;">
-                        <img id="supplierImage" v-if="imageUrl == '' || imageUrl == null" src="/assets/no_image.gif">
-                        <img id="supplierImage" v-if="imageUrl != '' && imageUrl != null" v-bind:src="imageUrl">
-                    </div>
-                    <div style="text-align:center;">
-                        <label class="custom-file-upload">
-                            <input type="file" @change="previewImage" />
-                            Select Image
-                        </label>
                     </div>
                 </div>
             </div>
@@ -168,16 +149,22 @@
                 <input type="text" class="form-control" v-model="filter" placeholder="Filter">
             </div>
         </div>
+
         <div class="col-md-12">
-            <div class="table-responsive">
-                <datatable :columns="columns" :data="suppliers" :filter-by="filter" style="margin-bottom: 5px;">
+            <a href="" v-on:click.prevent="print"><i class="fa fa-print"></i> Print</a>
+        </div>
+        <div class="col-md-12">
+            <div class="table-responsive" id="chequeList">
+                <datatable :columns="columns" :data="suppliersCheque" :filter-by="filter" style="margin-bottom: 5px;">
                     <template scope="{ row }">
                         <tr>
-                            <td>{{ row.Supplier_Code }}</td>
+                            <td>{{ row.Supplier_SlNo }}</td>
                             <td>{{ row.Supplier_Name }}</td>
-                            <td>{{ row.contact_person }}</td>
-                            <td>{{ row.Supplier_Address }}</td>
-                            <td>{{ row.Supplier_Mobile }}</td>
+                            <td>{{ row.cheque_no }}</td>
+                            <td>{{ row.amount }}</td>
+                            <td>{{ row.address }}</td>
+                            <td>{{ row.bank_name }}</td>
+                            <td>{{ row.description }}</td>
                             <td>
                                 <?php if($this->session->userdata('accountType') != 'u'){?>
                                 <button type="button" class="button edit" @click="editSupplier(row)">
@@ -211,22 +198,20 @@ new Vue({
     data() {
         return {
             supplier: {
-                Supplier_SlNo: 0,
-                Supplier_Code: '<?php echo $supplierCode;?>',
-                Supplier_Name: '',
-                Supplier_Mobile: '',
-                Supplier_Email: '',
-                Supplier_Address: '',
-                contact_person: '',
-                previous_due: 0.00
+                Cheque_SlNo: 0,
+                supplier_id: '',
+                address: '',
+                cheque_no: '',
+                description: '',
+                bank_name: '',
+                amount: 0.00
             },
             suppliers: [],
-            imageUrl: '',
-            selectedFile: null,
-
+            suppliersCheque: [],
+            selectedSupplier: null,
             columns: [{
                     label: 'Supplier Id',
-                    field: 'Supplier_Code',
+                    field: 'Supplier_SlNo',
                     align: 'center',
                     filterable: false
                 },
@@ -236,18 +221,28 @@ new Vue({
                     align: 'center'
                 },
                 {
-                    label: 'Contact Person',
-                    field: 'contact_person',
+                    label: 'Cheque No',
+                    field: 'cheque_no',
+                    align: 'center'
+                },
+                {
+                    label: 'Amount',
+                    field: 'amount',
                     align: 'center'
                 },
                 {
                     label: 'Address',
-                    field: 'Supplier_Address',
+                    field: 'address',
                     align: 'center'
                 },
                 {
-                    label: 'Contact Number',
-                    field: 'Supplier_Mobile',
+                    label: 'Bank Name',
+                    field: 'bank_name',
+                    align: 'center'
+                },
+                {
+                    label: 'Description',
+                    field: 'description',
                     align: 'center'
                 },
                 {
@@ -263,48 +258,49 @@ new Vue({
     },
     created() {
         this.getSuppliers();
+        this.getSuppliersCheque();
     },
     methods: {
+
         getSuppliers() {
             axios.get('/get_suppliers').then(res => {
                 this.suppliers = res.data;
             })
         },
-        previewImage() {
-            if (event.target.files.length > 0) {
-                this.selectedFile = event.target.files[0];
-                this.imageUrl = URL.createObjectURL(this.selectedFile);
-            } else {
-                this.selectedFile = null;
-                this.imageUrl = null;
-            }
-        },
+
         saveSupplier() {
-            let url = '/add_supplier';
-            if (this.supplier.Supplier_SlNo != 0) {
-                url = '/update_supplier';
+
+            let url = '/add_supplier_cheque';
+            if (this.supplier.Cheque_SlNo != 0) {
+                url = '/update_supplier_cheque';
             }
 
-            let fd = new FormData();
-            fd.append('image', this.selectedFile);
-            fd.append('data', JSON.stringify(this.supplier));
+            this.supplier.supplier_id = this.selectedSupplier.Supplier_SlNo;
 
-            axios.post(url, fd, {
-                onUploadProgress: upe => {
-                    let progress = Math.round(upe.loaded / upe.total * 100);
-                    console.log(progress);
-                }
-            }).then(res => {
+            let fd = {
+                supplier: this.supplier
+            }
+
+
+
+            axios.post(url, this.supplier).then(res => {
                 let r = res.data;
                 alert(r.message);
                 if (r.success) {
                     this.resetForm();
-                    this.supplier.Supplier_Code = r.supplierCode;
-                    this.getSuppliers();
+                    this.getSuppliersCheque();
                 }
             })
         },
+
+        getSuppliersCheque() {
+            axios.get('/get_suppliers_cheque').then(res => {
+                this.suppliersCheque = res.data;
+            })
+        },
+
         editSupplier(supplier) {
+
             let keys = Object.keys(this.supplier);
             keys.forEach(key => {
                 this.supplier[key] = supplier[key];
@@ -314,6 +310,11 @@ new Vue({
                 this.imageUrl = null;
             } else {
                 this.imageUrl = '/uploads/suppliers/' + supplier.image_name;
+            }
+
+            this.selectedSupplier = {
+                Supplier_SlNo: supplier.supplier_id,
+                display_name: supplier.Supplier_Name,
             }
         },
         deleteSupplier(supplierId) {
@@ -340,9 +341,38 @@ new Vue({
                     this.supplier[key] = 0;
                 }
             })
-            this.imageUrl = '';
-            this.selectedFile = null;
+            this.selectedSupplier = null;
+        },
+
+        async print() {
+
+            let reportContent = `
+					<div class="container">
+						<h4 style="text-align:center">Supplier Cheque List Report</h4 style="text-align:center">
+					</div>
+					<div class="container">
+						<div class="row">
+							<div class="col-xs-12">
+								${document.querySelector('#chequeList').innerHTML}
+							</div>
+						</div>
+					</div>
+				`;
+
+            var reportWindow = window.open('', 'PRINT',
+                `height=${screen.height}, width=${screen.width}, left=0, top=0`);
+            reportWindow.document.write(`
+					<?php $this->load->view('Administrator/reports/reportHeader.php');?>
+				`);
+
+            reportWindow.document.body.innerHTML += reportContent;
+
+            reportWindow.focus();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            reportWindow.print();
+            reportWindow.close();
         }
+
     }
 })
 </script>

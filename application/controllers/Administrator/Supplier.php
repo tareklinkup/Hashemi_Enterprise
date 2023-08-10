@@ -64,6 +64,7 @@ class Supplier extends CI_Controller {
             $this->load->view('Administrator/ajax/supplier_district');
         }
     }
+
     public function addSupplier()
     {
         $res = ['success'=>false, 'message'=>''];
@@ -123,6 +124,43 @@ class Supplier extends CI_Controller {
         echo json_encode($res);
     }
 
+    // supplier Chque entry methods 
+    public function supplierCheque()
+    {
+      $access = $this->mt->userAccess();
+        if(!$access){
+            redirect(base_url());
+        }
+        $data['title'] = "Supplier Cheque Entry";
+        $data['content'] = $this->load->view('Administrator/purchase/supplierChequeEntry', $data, TRUE);
+        $this->load->view('Administrator/index', $data);
+    }
+
+    public function addSupplierCheque()
+    {
+        $res = ['success'=>false, 'message'=>''];
+        try{
+            $supplierObj = json_decode($this->input->post('data'));
+
+            $supplier = (array)$supplierObj;
+
+            $supplier["branch_id"] = $this->session->userdata("BRANCHid");
+            $supplier["status"] = 'a';
+            $supplier["AddBy"] = $this->session->userdata("FullName");
+            $supplier["AddTime"] = date("Y-m-d H:i:s");
+            $this->db->insert('tbl_supplier_cheque', $supplier);
+            $res = ['success'=>true, 'message'=>'Supplier Cheque added successfully'];
+            
+        } catch (Exception $ex)
+        {
+            $res = ['success'=>false, 'message'=>$ex->getMessage()];
+        }
+
+        echo json_encode($res);
+    }
+
+
+
     public function updateSupplier()
     {
         $res = ['success'=>false, 'message'=>''];
@@ -176,6 +214,8 @@ class Supplier extends CI_Controller {
 
         echo json_encode($res);
     }
+
+    
     public function supplier_edit()  {
         $id = $this->input->post('edit');
        // $query = $this->db->query("SELECT tbl_supplier.*, tbl_country.*,tbl_district.* FROM tbl_supplier left join tbl_country on tbl_country.Country_SlNo=tbl_supplier.Country_SlNo left join tbl_district on tbl_district.District_SlNo=tbl_supplier.District_SlNo where tbl_supplier.Supplier_SlNo = '$id'");
@@ -386,6 +426,49 @@ class Supplier extends CI_Controller {
         ", $this->session->userdata('BRANCHid'))->result();
 
         echo json_encode($suppliers);
+    }
+
+        public function getSuppliersCheque()
+    {
+        $suplierChecks = $this->db->query("
+            SELECT sc.*,
+            s.Supplier_SlNo,
+            s.Supplier_Name
+            from tbl_supplier_cheque sc
+            left join tbl_supplier s on s.Supplier_SlNo = sc.supplier_id
+            where sc.status = 'a'
+            and sc.branch_id = ?
+        ", $this->brunch)->result();
+
+        echo json_encode($suplierChecks);
+    }
+
+    public function updateSupplierCheque()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try{
+
+            $supplierChequeObj = json_decode($this->input->raw_input_stream);
+
+            $supplierCheque =  (array) $supplierChequeObj;
+
+            $supplierChequeId = $supplierChequeObj->Cheque_SlNo;
+            
+            unset($supplierCheque->Cheque_SlNo);
+
+            $supplierCheque["branch_id"] = $this->session->userdata("BRANCHid");
+            $supplierCheque["updated_by"] = $this->session->userdata("FullName");
+            $supplierCheque["updated_at"] = date("Y-m-d H:i:s");
+            
+            $this->db->where('Cheque_SlNo',  $supplierChequeId)->update('tbl_supplier_cheque', $supplierCheque);
+
+            $res = ['success' => true, 'message' => 'Updated Your Supplier Cheque'];
+
+        }catch (Exception $e) {
+            return response()->json(['title' => 'success', 'message' => $e->getMessage()], 500);
+        }
+
+        echo json_encode($res);
     }
 
     public function getSupplierDue(){
