@@ -140,7 +140,9 @@ class Supplier extends CI_Controller {
     {
         $res = ['success'=>false, 'message'=>''];
         try{
+
             $supplierObj = json_decode($this->input->post('data'));
+            $supplierObj = json_decode($this->input->raw_input_stream);
 
             $supplier = (array)$supplierObj;
 
@@ -238,6 +240,23 @@ class Supplier extends CI_Controller {
 
         echo json_encode($res);
     }
+
+ public function deleteSupplierCheque()
+ {
+    $res = ['success'=>false, 'message'=>''];
+        try{
+            $data = json_decode($this->input->raw_input_stream);
+
+            $this->db->query("update tbl_supplier_cheque set status = 'd' where Cheque_SlNo = ?", $data->supplierId);
+
+            $res = ['success'=>true, 'message'=>'Supplier Cheque deleted'];
+        } catch (Exception $ex){
+            $res = ['success'=>false, 'message'=>$ex->getMessage()];
+        }
+
+        echo json_encode($res);
+
+}
     function supplier_due(){
         $access = $this->mt->userAccess();
         if(!$access){

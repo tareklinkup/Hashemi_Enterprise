@@ -109,7 +109,8 @@ $route['add_supplier'] = 'Administrator/Supplier/addSupplier';
 $route['supplieredit'] = 'Administrator/Supplier/supplier_edit/';
 $route['update_supplier'] = 'Administrator/Supplier/updateSupplier';
 $route['supplierList'] = 'Administrator/Reports/supplierList';
-$route['delete_supplier'] = 'Administrator/Supplier/deleteSupplier';
+$route['delete_supplier'] = 'Administrator/Supplier/deleteSupplier'; 
+$route['delete_supplier_cheque'] = 'Administrator/Supplier/deleteSupplierCheque';
 
 $route['customer'] = 'Administrator/Customer';
 $route['add_customer'] = 'Administrator/Customer/addCustomer';

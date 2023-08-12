@@ -170,7 +170,7 @@
                                 <button type="button" class="button edit" @click="editSupplier(row)">
                                     <i class="fa fa-pencil"></i>
                                 </button>
-                                <button type="button" class="button" @click="deleteSupplier(row.Supplier_SlNo)">
+                                <button type="button" class="button" @click="deleteSupplier(row.Cheque_SlNo)">
                                     <i class="fa fa-trash"></i>
                                 </button>
                                 <?php }?>
@@ -322,13 +322,13 @@ new Vue({
             if (deleteConfirm == false) {
                 return;
             }
-            axios.post('/delete_supplier', {
+            axios.post('/delete_supplier_cheque', {
                 supplierId: supplierId
             }).then(res => {
                 let r = res.data;
                 alert(r.message);
                 if (r.success) {
-                    this.getSuppliers();
+                    this.getSuppliersCheque();
                 }
             })
         },
